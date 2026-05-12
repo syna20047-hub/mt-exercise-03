@@ -66,3 +66,52 @@ pip install -r requirements.txt
 Manually download and install Moses and other dependencies (you'll need to look inside scripts/download_install_packages.sh to replicate its steps).
 
 Run the training logic by manually executing the code inside train.sh, or porting it to a Python script or notebook.
+
+# Pre-norm and Post-norm Transformers
+Overview
+In this exercise, two alternative Transformer architectures were compared using JoenyNMT: Pre-norm and Post-norm Transformer.
+Both models were trained using the same hyperparameters as the provided baseline model. 
+
+# Changes Made
+Added configuration files
+Created two new configuration files in configs/:
+
+    deen_transformer_prenorm.yaml
+    deen_transformer_postnorm.yaml
+
+The configurations are based on the baseline model configuration.
+The baseline model log file baseline.log was added separately in configs/ as well.
+
+Layer normalization changes
+The JoeyNMT Transformer implementation was modified to support two normalization strategies:
+
+    layer_norm: "pre"
+    layer_norm: "post"
+
+These changes were implemented in the Transformer encoder and decoder layers.
+
+Training
+Both models were trained on the provided German-English dataset using identical hyperparameters, same tokenizer and vocabulary, same dataset split, same optimizer and learning rate.
+Training was executed with:
+
+    ./scripts/train.sh
+
+The validation perplexity was evaluated every 500 steps.
+
+The train.sh was modified to run it on the corresponding model:
+
+    model_name=deen_transformer_...
+
+# Results
+The validation perplexities of the three models were compared:
+
+ - Baseline
+ - Prenorm
+ - Postnorm
+
+A line chart was created to visualize the training progress.
+
+# Observation
+ - The PreNorm model converged faster and achieved the lowest validation perplexities.
+ - The PostNorm model improved more slowly and stabilized at higher perplexity values.
+ - The results are consistent with Wang et al. (2019), which reported that PreNorm Transformers are easier to optimize and more stable during       training.
